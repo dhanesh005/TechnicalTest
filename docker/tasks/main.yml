@@ -42,6 +42,4 @@
   with_items:
     - { line: '%docker ALL=(ALL) NOPASSWD: ALL' }
     - { line: 'jenkins ALL=(ALL) NOPASSWD: ALL' }
-    
-    
 ...
