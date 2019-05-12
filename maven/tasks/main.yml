@@ -1,0 +1,45 @@
+---
+- name: Install Java JDK
+  apt:
+    name: openjdk-8-jdk
+    state: present
+
+- name: Check maven is installed or not
+  stat:
+    path: '{{ maven_home_parent_directory }}/apache-maven-{{ maven_version }}'  
+  register: maven_installed
+
+- name: Installed maven version
+  debug: 'msg={{ maven_installed.stat.exists }}'
+
+- block:
+  - name: Download and extract maven packages
+    unarchive:
+      src: 'http://www.apache.org/dist/maven/maven-{{ maven_major }}/{{ maven_version }}/binaries/apache-maven-{{ maven_version }}-bin.tar.gz'
+      dest: '{{ maven_home_parent_directory }}'
+      copy: no
+
+  - name: Create link to /usr/bin
+    file:
+      src: '{{ maven_home_parent_directory }}/apache-maven-{{ maven_version }}/bin/mvn'
+      dest: '/usr/bin/mvn'
+      state: link
+  
+  - name: Remove old path configuration
+    file:
+      path: /etc/profile.d/maven.sh
+      state: absent
+
+  - name: Configure maven and enviornment variables
+    lineinfile:
+      dest: '{{ maven_enviornment_file }}'
+      line: '{{ item.line }}'
+      create: yes
+      state: present
+    with_items:
+      - { line: 'M2_HOME={{ maven_home_parent_directory }}/apache-maven-{{ maven_version }}' }
+      - { line: 'PATH=$PATH:$M2_HOME/bin' }
+
+  when: maven_installed.stat.exists != True
+...
+

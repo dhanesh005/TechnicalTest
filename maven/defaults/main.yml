@@ -1,0 +1,7 @@
+---
+# Defining variable for maven.
+maven_major: 3
+maven_version: 3.6.1
+maven_home_parent_directory: /opt
+maven_enviornment_file: "/etc/profile.d/maven.sh"
+...
