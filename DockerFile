@@ -1,2 +1,0 @@
-from openjdk:latest
-copy target/*.jar E:\Projects\DevOps\Tomcat\webapps
