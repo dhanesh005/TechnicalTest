@@ -1,0 +1,44 @@
+---
+- name: Install Docker's dependencies
+  apt:
+    name: "{{ docker_package_dependencies }}"
+    state: "{{ docker_state }}"
+
+- name: Add Docker's public PGP key to the APT keyring
+  apt_key:
+    id: "{{ docker_apt_key_id }}"
+    url: "{{ docker_apt_key_url }}"
+
+- name: Configure Docker's upstream APT repository
+  apt_repository:
+    repo: "{{ docker_apt_repository }}"
+    state: "{{ docker_state }}"
+    update_cache: yes
+
+- name: Install Docker
+  apt:
+    name: "docker-{{ docker_edition }}"
+    state: "{{ docker_state }}"
+    update_cache: yes
+
+- name: Check for docker group
+  group:
+    name: docker
+    state: present
+
+- name: Add Unix user
+  user: 
+    name: dhanesh005
+    group: users 
+    groups: docker
+
+- name: Allow 'docker' group to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    create: yes
+    regexp: '^%docker'
+    line: '{{ item.line }}'
+  with_items:
+    - { line: '%docker ALL=(ALL) NOPASSWD: ALL' }
+...
